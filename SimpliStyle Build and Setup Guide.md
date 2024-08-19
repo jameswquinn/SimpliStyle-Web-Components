@@ -1,4 +1,4 @@
-# SimpliStyle Build and Setup Guide - Part 1
+# SimpliStyle Build and Setup Guide
 
 ## Project Structure
 
@@ -479,6 +479,29 @@ class SSTabs extends SimpliStyleElement {
           background: none;
           border: none;
           border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+          border-bottom-color: var(--ss-primary-color, #0071e3);
+        }
+        .tab-content {
+          display: none;
+          padding: 1rem;
+        }
+        .tab-content.active {
+          display: block;
+        }
+      </style>
+      <div class="tabs"></div>
+      <div class="tab-contents">
+        <slot></slot>
+      </div>
+    `);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._createTabs();
+    this._selectTab
 
 ```
 
