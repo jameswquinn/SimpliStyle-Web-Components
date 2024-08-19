@@ -1,1 +1,40 @@
-placeholder
+{
+  "name": "simplistyle",
+  "version": "1.0.0",
+  "description": "A lightweight, customizable web component framework inspired by Apple's design principles",
+  "main": "dist/simplistyle.umd.js",
+  "module": "dist/simplistyle.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/simplistyle.es.js",
+      "require": "./dist/simplistyle.umd.js"
+    },
+    "./css": "./dist/simplistyle-global.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "web-components",
+    "css-framework",
+    "ui-components"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.3.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/simplistyle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/simplistyle/issues"
+  },
+  "homepage": "https://github.com/yourusername/simplistyle#readme"
+}
