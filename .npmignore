@@ -1,1 +1,4 @@
-placholder
+# .npmignore
+src/
+vite.config.js
+.gitignore
