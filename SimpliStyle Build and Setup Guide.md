@@ -708,8 +708,6 @@ With this configuration, when you run the build command, Vite will:
 - Bundle your web components into a JavaScript file.
 - Copy your global CSS file into the dist folder.
 
-# SimpliStyle Build and Setup Guide - Part 3
-
 ## Package Configuration
 
 Create a `package.json` file in the root of your project with the following content:
