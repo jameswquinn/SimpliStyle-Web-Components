@@ -505,9 +505,6 @@ class SSTabs extends SimpliStyleElement {
 
 ```
 
-
-# SimpliStyle Build and Setup Guide - Part 2
-
 ## Global CSS File
 
 Create the file `src/simplistyle-global.css` with the following content:
