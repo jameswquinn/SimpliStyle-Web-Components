@@ -18,6 +18,8 @@ SimpliStyle is a lightweight, customizable web component framework inspired by A
 5. [Customization](#customization)
 6. [Accessibility](#accessibility)
 7. [Browser Support](#browser-support)
+8. [Contributing](#contributing)
+9. [License](#license)
 
 ## Installation
 
@@ -310,6 +312,22 @@ SimpliStyle supports all modern browsers that implement the Web Components stand
 - Edge (Chromium-based versions)
 
 For older browsers, you may need to use polyfills for Web Components support.
+
+## Contributing
+
+We welcome contributions to SimpliStyle! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository
+2. Create a new branch for your feature or bug fix
+3. Make your changes and commit them with a clear commit message
+4. Push your changes to your fork
+5. Create a pull request to the main SimpliStyle repository
+
+Please ensure your code follows the existing style and includes appropriate tests and documentation.
+
+## License
+
+SimpliStyle is released under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
