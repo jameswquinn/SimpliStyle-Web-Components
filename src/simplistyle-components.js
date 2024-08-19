@@ -1,5 +1,3 @@
-// src/simplistyle-components.js
-
 // Utility functions
 const createTemplate = (html) => {
   const template = document.createElement('template');
@@ -278,9 +276,7 @@ class SSModal extends SimpliStyleElement {
   connectedCallback() {
     super.connectedCallback();
     this.shadowRoot.querySelector('.close').addEventListener('click', () => this.close());
-    this.addEventListener('click', (e) => {
-      if (e.target === this) this.close();
-    });
+    document.addEventListener('keydown', this._handleKeydown);
   }
 
   disconnectedCallback() {
@@ -289,38 +285,15 @@ class SSModal extends SimpliStyleElement {
 
   open() {
     this.style.display = 'flex';
-    document.addEventListener('keydown', this._handleKeydown);
-    this.dispatchEvent(new CustomEvent('ssmodalopen'));
-    
-    // Focus trap
-    const focusableElements = this.shadowRoot.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    this._firstFocusableElement = focusableElements[0];
-    this._lastFocusableElement = focusableElements[focusableElements.length - 1];
-    this._firstFocusableElement.focus();
   }
 
   close() {
     this.style.display = 'none';
-    document.removeEventListener('keydown', this._handleKeydown);
-    this.dispatchEvent(new CustomEvent('ssmodalclose'));
   }
 
-  _handleKeydown(e) {
-    if (e.key === 'Escape') {
+  _handleKeydown(event) {
+    if (event.key === 'Escape') {
       this.close();
-    } else if (e.key === 'Tab') {
-      // Focus trap
-      if (e.shiftKey) {
-        if (document.activeElement === this._firstFocusableElement) {
-          e.preventDefault();
-          this._lastFocusableElement.focus();
-        }
-      } else {
-        if (document.activeElement === this._lastFocusableElement) {
-          e.preventDefault();
-          this._firstFocusableElement.focus();
-        }
-      }
     }
   }
 }
@@ -334,54 +307,37 @@ class SSTooltip extends SimpliStyleElement {
         :host {
           position: relative;
           display: inline-block;
+          cursor: pointer;
         }
         .tooltip {
           visibility: hidden;
           background-color: var(--ss-tooltip-bg, black);
           color: var(--ss-tooltip-color, white);
           text-align: center;
-          border-radius: 6px;
-          padding: 5px;
+          padding: 0.5rem;
+          border-radius: var(--ss-border-radius, 4px);
           position: absolute;
-          z-index: 1;
-          bottom: 125%;
+          z-index: 10;
+          bottom: 100%;
           left: 50%;
           transform: translateX(-50%);
+          white-space: nowrap;
           opacity: 0;
           transition: opacity 0.3s;
-          white-space: nowrap;
         }
-        :host(:hover) .tooltip,
-        :host(:focus) .tooltip,
-        :host(:focus-within) .tooltip {
+        :host(:hover) .tooltip {
           visibility: visible;
           opacity: 1;
         }
+        @media (max-width: 768px) {
+          .tooltip {
+            font-size: 0.875rem;
+          }
+        }
       </style>
+      <span class="tooltip"><slot name="tooltip"></slot></span>
       <slot></slot>
-      <span class="tooltip" role="tooltip"></span>
     `);
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    const tooltip = this.shadowRoot.querySelector('.tooltip');
-    tooltip.textContent = this.getAttribute('text') || '';
-    
-    // Accessibility
-    this.setAttribute('tabindex', '0');
-    this.setAttribute('aria-describedby', 'tooltip');
-    tooltip.id = 'tooltip';
-  }
-
-  static get observedAttributes() {
-    return ['text'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'text' && oldValue !== newValue) {
-      this.shadowRoot.querySelector('.tooltip').textContent = newValue;
-    }
   }
 }
 
@@ -393,49 +349,53 @@ class SSAccordion extends SimpliStyleElement {
       <style>
         :host {
           display: block;
+        }
+        .accordion {
+          background-color: var(--ss-accordion-bg, white);
           border: 1px solid var(--ss-border-color, #c6c6c8);
           border-radius: var(--ss-border-radius, 8px);
-          overflow: hidden;
-        }
-        .accordion-item {
-          border-bottom: 1px solid var(--ss-border-color, #c6c6c8);
-        }
-        .accordion-item:last-child {
-          border-bottom: none;
+          margin-bottom: 1rem;
         }
         .accordion-header {
-          background-color: var(--ss-accordion-header-bg, #f8f9fa);
           padding: 1rem;
           cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          background-color: var(--ss-accordion-header-bg, #f7f7f7);
+          border-bottom: 1px solid var(--ss-border-color, #c6c6c8);
+        }
+        .accordion-header:hover {
+          background-color: var(--ss-accordion-header-hover-bg, #ececec);
         }
         .accordion-content {
-          padding: 1rem;
           display: none;
+          padding: 1rem;
         }
-        .accordion-content.active {
+        .accordion-content.open {
           display: block;
         }
       </style>
-      <slot></slot>
+      <div class="accordion">
+        <div class="accordion-header" role="button" aria-expanded="false">
+          <slot name="header"></slot>
+        </div>
+        <div class="accordion-content">
+          <slot></slot>
+        </div>
+      </div>
     `);
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('click', this._handleClick.bind(this));
+    this.shadowRoot.querySelector('.accordion-header').addEventListener('click', () => {
+      this._toggleAccordion();
+    });
   }
 
-  _handleClick(event) {
-    const header = event.target.closest('.accordion-header');
-    if (header) {
-      const item = header.parentElement;
-      const content = item.querySelector('.accordion-content');
-      content.classList.toggle('active');
-      header.setAttribute('aria-expanded', content.classList.contains('active'));
-    }
+  _toggleAccordion() {
+    const content = this.shadowRoot.querySelector('.accordion-content');
+    const isOpen = content.classList.contains('open');
+    content.classList.toggle('open');
+    this.shadowRoot.querySelector('.accordion-header').setAttribute('aria-expanded', !isOpen);
   }
 }
 
@@ -480,4 +440,43 @@ class SSTabs extends SimpliStyleElement {
   connectedCallback() {
     super.connectedCallback();
     this._createTabs();
-    this._selectTab
+    this._selectTab(0);
+  }
+
+  _createTabs() {
+    const tabHeaders = this.shadowRoot.querySelector('.tabs');
+    const tabContents = this.shadowRoot.querySelector('.tab-contents').assignedElements();
+
+    tabContents.forEach((content, index) => {
+      const tabHeader = document.createElement('button');
+      tabHeader.textContent = content.getAttribute('label') || `Tab ${index + 1}`;
+      tabHeader.classList.add('tab');
+      tabHeader.addEventListener('click', () => this._selectTab(index));
+      tabHeaders.appendChild(tabHeader);
+    });
+  }
+
+  _selectTab(index) {
+    const tabs = this.shadowRoot.querySelectorAll('.tab');
+    const contents = this.shadowRoot.querySelector('.tab-contents').assignedElements();
+
+    tabs.forEach((tab, i) => {
+      if (i === index) {
+        tab.classList.add('active');
+        contents[i].classList.add('active');
+      } else {
+        tab.classList.remove('active');
+        contents[i].classList.remove('active');
+      }
+    });
+  }
+}
+
+// Register components
+defineComponent('ss-button', SSButton);
+defineComponent('ss-card', SSCard);
+defineComponent('ss-nav', SSNav);
+defineComponent('ss-modal', SSModal);
+defineComponent('ss-tooltip', SSTooltip);
+defineComponent('ss-accordion', SSAccordion);
+defineComponent('ss-tabs', SSTabs);
